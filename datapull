@@ -11,8 +11,8 @@ from datetime import datetime,timedelta
 #rate_limiter = RateLimiter(max_calls=100, period=3600)
 
 
-#load list of SP500 ticker symbols
-SP=pd.read_csv(r"/home/edo_romani1/my-python-repository/SP500stocks.csv")
+#load list of ticker symbols
+SP=pd.read_csv(r"/home/edo_romani1/my-python-repository/stocks.csv")
 
 #set token
 token1="asduhauefh3hefuwifhwi2324892urjfenfk"
