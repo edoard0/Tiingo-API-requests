@@ -1,0 +1,64 @@
+#SAMPLE CODE STRUCTURE FOR CALLING 100 STOCKS AND SAVE RESULTS TO LOCAL FILE
+
+#Import relevant packages
+import requests
+import pandas as pd
+import datetime
+from datetime import datetime,timedelta
+
+#Set rate limiter if needed
+#from ratelimiter import RateLimiter
+#rate_limiter = RateLimiter(max_calls=100, period=3600)
+
+
+#load list of SP500 ticker symbols
+SP=pd.read_csv(r"/home/edo_romani1/my-python-repository/SP500stocks.csv")
+
+#set token
+token1="asduhauefh3hefuwifhwi2324892urjfenfk"
+
+#set ticker list
+ticker_symbols=list(SP["Symbol"])
+ticker_symbols.append("SPY")
+end_date=str(datetime.now().date()-timedelta(days=1))
+
+data1=[]
+
+for symbol in ticker_symbols:
+        #with rate_limiter:
+                try:
+                        url = "https://api.tiingo.com/tiingo/daily/{}/prices?startDate=2000-01-03&endDate={}&format=csv&token={}".format(symbol,end_date,token1)
+                        r = requests.get(url,timeout=10)
+
+                        rows=r.text.split("\n")[1:-1]
+
+                        df=pd.DataFrame(rows)
+                        df=df.iloc[:,0].str.split(",",13,expand=True)
+                        df["Symbol"]=symbol
+
+                        data1.append(df)
+
+                except requests.exceptions.ReadTimeout:
+                        url = "https://api.tiingo.com/tiingo/daily/{}/prices?startDate=2000-01-03&endDate={}&format=csv&token={}".format(symbol,end_date,token1)
+                        r = requests.get(url,timeout=20)
+
+                        rows=r.text.split("\n")[1:-1]
+
+                        df=pd.DataFrame(rows)
+                        df=df.iloc[:,0].str.split(",",13,expand=True)
+                        df["Symbol"]=symbol
+
+                        data1.append(df)
+                
+                #skip if call yield empty/not found
+                except IndexError:
+                        continue
+
+#store results in final dataframe
+df1=pd.concat(data1)
+
+#drop redundant/unnecessary columns
+df_final.drop(df_final.iloc[:,6:13],axis=1,inplace=True)
+
+#save to local
+df_final.to_csv(r"/home/edo_romani1/my-python-repository/historicalSP_quotes.csv",index=False)
